@@ -9,7 +9,7 @@ import { WorkerBrowserConverter } from '@matbee/libreoffice-converter/browser';
 import type { InputFormat } from '@matbee/libreoffice-converter/browser';
 
 const LIBREOFFICE_LOCAL_PATH =
-  'https://cdn.jsdelivr.net/gh/sok-o/pdf@main/public/libreoffice-wasm/';
+  'https://pub-765ae27e5d3a4d09bda67cabc7470e15.r2.dev/libreoffice-wasm/';
 
 export interface LoadProgress {
   phase: 'loading' | 'initializing' | 'converting' | 'complete' | 'ready';
