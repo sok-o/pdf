@@ -514,20 +514,13 @@ function languageRouterPlugin(): Plugin {
  *
  * The large .wasm/.data files remain on R2.
  */
-function copyLibreOfficeWorkerFilesPlugin(): Plugin {
+function prepareLibreOfficeAssetsPlugin(): Plugin {
   return {
-    name: 'copy-libreoffice-worker-files',
+    name: 'prepare-libreoffice-assets',
 
     closeBundle() {
-      const outDir = resolve(
-        __dirname,
-        'dist'
-      );
-
-      const targetDir = resolve(
-        outDir,
-        'libreoffice-wasm'
-      );
+      const outDir = resolve(__dirname, 'dist');
+      const targetDir = resolve(outDir, 'libreoffice-wasm');
 
       const packageDir = resolve(
         __dirname,
@@ -535,25 +528,18 @@ function copyLibreOfficeWorkerFilesPlugin(): Plugin {
       );
 
       /*
-       * These are the files provided by
-       * @matbee/libreoffice-converter.
+       * These JavaScript files MUST be served from the same
+       * origin as the application because they are Worker
+       * scripts.
        */
-      const files = [
+      const workerFiles = [
         {
           name: 'soffice.js',
-          source: resolve(
-            packageDir,
-            'wasm',
-            'soffice.js'
-          ),
+          source: resolve(packageDir, 'wasm', 'soffice.js'),
         },
         {
           name: 'soffice.worker.js',
-          source: resolve(
-            packageDir,
-            'wasm',
-            'soffice.worker.js'
-          ),
+          source: resolve(packageDir, 'wasm', 'soffice.worker.js'),
         },
         {
           name: 'browser.worker.global.js',
@@ -565,34 +551,51 @@ function copyLibreOfficeWorkerFilesPlugin(): Plugin {
         },
       ];
 
-      fs.mkdirSync(targetDir, {
-        recursive: true,
-      });
+      fs.mkdirSync(targetDir, { recursive: true });
 
-      for (const file of files) {
+      for (const file of workerFiles) {
         if (!fs.existsSync(file.source)) {
           throw new Error(
-            `[LibreOffice] Required file not found:\n${file.source}`
+            `[LibreOffice] Required Worker file not found:\n${file.source}`
           );
         }
 
-        const target = resolve(
-          targetDir,
-          file.name
-        );
+        const target = resolve(targetDir, file.name);
 
-        fs.copyFileSync(
-          file.source,
-          target
-        );
+        fs.copyFileSync(file.source, target);
 
         console.log(
           `[LibreOffice] Copied ${file.name} -> dist/libreoffice-wasm/${file.name}`
         );
       }
 
+      /*
+       * These large files are hosted on R2.
+       *
+       * They MUST NOT remain in dist because Cloudflare
+       * Workers Assets has a 25 MiB per-file limit.
+       */
+      const r2Files = [
+        'soffice.wasm.gz',
+        'soffice.data.gz',
+      ];
+
+      for (const fileName of r2Files) {
+        const filePath = resolve(targetDir, fileName);
+
+        if (fs.existsSync(filePath)) {
+          fs.rmSync(filePath, {
+            force: true,
+          });
+
+          console.log(
+            `[LibreOffice] Removed R2-hosted asset from dist: ${fileName}`
+          );
+        }
+      }
+
       console.log(
-        '[LibreOffice] Same-origin worker files prepared successfully'
+        '[LibreOffice] Same-origin Worker files prepared; WASM/data remain on R2'
       );
     },
   };
@@ -947,11 +950,11 @@ export default defineConfig(() => {
 
   if (USE_CDN) {
     console.log(
-      '[Vite] Using CDN for WASM files (with local fallback)'
+      '[Vite] Using R2 for LibreOffice WASM/data files'
     );
   } else {
     console.log(
-      '[Vite] Using local WASM files only'
+      '[Vite] Using configured LibreOffice WASM/data source'
     );
   }
 
@@ -1018,7 +1021,7 @@ export default defineConfig(() => {
        * This copies the LibreOffice JS worker files
        * to the same origin as pdf.veloxity.org.
        */
-      copyLibreOfficeWorkerFilesPlugin(),
+      prepareLibreOfficeAssetsPlugin(),
 
       flattenPagesPlugin(),
 
