@@ -544,6 +544,24 @@ export default defineConfig(() => {
     },
     plugins: [
       // basicSsl(),
+      plugins: [
+  {
+    name: 'cloudflare-headers',
+    closeBundle() {
+      const outDir = resolve(__dirname, 'dist');
+
+      const headers = `/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+`;
+
+      fs.writeFileSync(resolve(outDir, '_headers'), headers);
+
+      console.log('[Vite] Created Cloudflare _headers file');
+    },
+  },
+
+  handlebars({
       handlebars({
         partialDirectory: resolve(__dirname, 'src/partials'),
         context: {
