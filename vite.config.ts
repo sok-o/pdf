@@ -453,31 +453,6 @@ function languageRouterPlugin(): Plugin {
   };
 }
 
-function removeLocalLibreOfficePlugin(): Plugin {
-  return {
-    name: 'remove-local-libreoffice',
-
-    closeBundle() {
-      const outDir = resolve(__dirname, 'dist');
-      const libreOfficeDir = resolve(
-        outDir,
-        'libreoffice-wasm'
-      );
-
-      if (fs.existsSync(libreOfficeDir)) {
-        fs.rmSync(libreOfficeDir, {
-          recursive: true,
-          force: true,
-        });
-
-        console.log(
-          '[Vite] Removed local LibreOffice WASM files from dist'
-        );
-      }
-    },
-  };
-}
-
 function flattenPagesPlugin(): Plugin {
   return {
     name: 'flatten-pages',
@@ -793,8 +768,6 @@ export default defineConfig(() => {
       }),
 
       languageRouterPlugin(),
-
-      removeLocalLibreOfficePlugin(),
 
       flattenPagesPlugin(),
 
