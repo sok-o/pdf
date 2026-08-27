@@ -17,9 +17,11 @@ function engineVersion(): string {
   try {
     const dir = resolve(__dirname, 'node_modules/bentopdf-pdfium');
     const h = createHash('sha256');
+
     for (const f of ['editcore.js', 'editcore.wasm']) {
       h.update(fs.readFileSync(resolve(dir, f)));
     }
+
     return h.digest('hex').slice(0, 12);
   } catch {
     return 'dev';
@@ -121,7 +123,9 @@ function createLanguageMiddleware(isDev: boolean): Connect.NextHandleFunction {
       const rest = match[2] ?? '';
 
       if (rest === '' && !pathname.endsWith('/')) {
-        const redirectUrl = basePath ? `${basePath}/${lang}/` : `/${lang}/`;
+        const redirectUrl = basePath
+          ? `${basePath}/${lang}/`
+          : `/${lang}/`;
 
         res.statusCode = 302;
         res.setHeader(
@@ -134,7 +138,9 @@ function createLanguageMiddleware(isDev: boolean): Connect.NextHandleFunction {
 
       if (rest === '' || rest === '/') {
         if (isDev) {
-          req.url = '/index.html' + (queryString ? `?${queryString}` : '');
+          req.url =
+            '/index.html' +
+            (queryString ? `?${queryString}` : '');
         } else {
           const langIndexPath = resolve(
             __dirname,
@@ -149,14 +155,18 @@ function createLanguageMiddleware(isDev: boolean): Connect.NextHandleFunction {
               (queryString ? `?${queryString}` : '');
           } else {
             req.url =
-              '/index.html' + (queryString ? `?${queryString}` : '');
+              '/index.html' +
+              (queryString ? `?${queryString}` : '');
           }
         }
 
         return next();
       }
 
-      const cleanPath = rest.replace(/\/$/, '').replace(/\.html$/, '');
+      const cleanPath = rest
+        .replace(/\/$/, '')
+        .replace(/\.html$/, '');
+
       const pageName = cleanPath.split('/')[0];
 
       if (pageName && PAGES.has(pageName)) {
@@ -312,21 +322,29 @@ function createCorsProxyMiddleware(): Connect.NextHandleFunction {
         'Access-Control-Allow-Origin',
         req.headers.origin || '*'
       );
+
       res.setHeader(
         'Access-Control-Allow-Methods',
         'GET,POST,OPTIONS'
       );
+
       res.setHeader(
         'Access-Control-Allow-Headers',
         'Content-Type'
       );
+
       res.statusCode = 204;
       res.end();
       return;
     }
 
-    const parsed = new URL(req.url, 'http://localhost');
-    const targetUrl = parsed.searchParams.get('url');
+    const parsed = new URL(
+      req.url,
+      'http://localhost'
+    );
+
+    const targetUrl =
+      parsed.searchParams.get('url');
 
     if (!targetUrl) {
       res.statusCode = 400;
@@ -347,7 +365,10 @@ function createCorsProxyMiddleware(): Connect.NextHandleFunction {
       return;
     }
 
-    if (targetProtocol !== 'https:' && targetProtocol !== 'http:') {
+    if (
+      targetProtocol !== 'https:' &&
+      targetProtocol !== 'http:'
+    ) {
       res.statusCode = 400;
       res.end('Unsupported protocol');
       return;
@@ -357,12 +378,15 @@ function createCorsProxyMiddleware(): Connect.NextHandleFunction {
       console.warn(
         `[CORS Proxy] Blocked disallowed host: ${targetHost}`
       );
+
       res.statusCode = 403;
       res.end(`Host not allowed: ${targetHost}`);
       return;
     }
 
-    console.log(`[CORS Proxy] ${req.method} ${targetUrl}`);
+    console.log(
+      `[CORS Proxy] ${req.method} ${targetUrl}`
+    );
 
     const bodyChunks: Buffer[] = [];
 
@@ -373,8 +397,11 @@ function createCorsProxyMiddleware(): Connect.NextHandleFunction {
     req.on('end', () => {
       const body = Buffer.concat(bodyChunks);
       const target = new URL(targetUrl);
+
       const transport =
-        target.protocol === 'https:' ? https : http;
+        target.protocol === 'https:'
+          ? https
+          : http;
 
       const headers: Record<string, string> = {};
 
@@ -384,7 +411,8 @@ function createCorsProxyMiddleware(): Connect.NextHandleFunction {
       }
 
       if (body.length > 0) {
-        headers['Content-Length'] = String(body.length);
+        headers['Content-Length'] =
+          String(body.length);
       }
 
       const proxyReq = transport.request(
@@ -413,19 +441,27 @@ function createCorsProxyMiddleware(): Connect.NextHandleFunction {
             'Content-Type'
           );
 
-          res.statusCode = proxyRes.statusCode || 200;
+          res.statusCode =
+            proxyRes.statusCode || 200;
 
           proxyRes.pipe(res);
         }
       );
 
       proxyReq.on('error', (err) => {
-        const msg = String(err.message).replace(/[\r\n]+/g, ' ');
+        const msg = String(
+          err.message
+        ).replace(/[\r\n]+/g, ' ');
 
-        console.error('[CORS Proxy] Error:', msg);
+        console.error(
+          '[CORS Proxy] Error:',
+          msg
+        );
 
         res.statusCode = 502;
-        res.end(`Proxy error: ${msg}`);
+        res.end(
+          `Proxy error: ${msg}`
+        );
       });
 
       if (body.length > 0) {
@@ -442,13 +478,166 @@ function languageRouterPlugin(): Plugin {
     name: 'language-router',
 
     configureServer(server) {
-      server.middlewares.use(createCorsProxyMiddleware());
-      server.middlewares.use(createLanguageMiddleware(true));
+      server.middlewares.use(
+        createCorsProxyMiddleware()
+      );
+
+      server.middlewares.use(
+        createLanguageMiddleware(true)
+      );
     },
 
     configurePreviewServer(server) {
-      server.middlewares.use(createCorsProxyMiddleware());
-      server.middlewares.use(createLanguageMiddleware(false));
+      server.middlewares.use(
+        createCorsProxyMiddleware()
+      );
+
+      server.middlewares.use(
+        createLanguageMiddleware(false)
+      );
+    },
+  };
+}
+
+/*
+ * ============================================================
+ * LIBREOFFICE FIX
+ * ============================================================
+ *
+ * The browser Worker cannot be loaded from the R2 origin.
+ *
+ * Therefore:
+ *
+ *   pdf.veloxity.org/libreoffice-wasm/*.js
+ *
+ * must contain the LibreOffice JavaScript worker/runtime files.
+ *
+ * The large .wasm/.data files remain on R2.
+ */
+function copyLibreOfficeWorkerFilesPlugin(): Plugin {
+  return {
+    name: 'copy-libreoffice-worker-files',
+
+    closeBundle() {
+      const outDir = resolve(
+        __dirname,
+        'dist'
+      );
+
+      const targetDir = resolve(
+        outDir,
+        'libreoffice-wasm'
+      );
+
+      const packageDir = resolve(
+        __dirname,
+        'node_modules/@matbee/libreoffice-converter'
+      );
+
+      /*
+       * These are the files provided by
+       * @matbee/libreoffice-converter.
+       */
+      const files = [
+        {
+          name: 'soffice.js',
+          source: resolve(
+            packageDir,
+            'wasm',
+            'soffice.js'
+          ),
+        },
+        {
+          name: 'soffice.worker.js',
+          source: resolve(
+            packageDir,
+            'wasm',
+            'soffice.worker.js'
+          ),
+        },
+        {
+          name: 'browser.worker.global.js',
+          source: resolve(
+            packageDir,
+            'dist',
+            'browser.worker.global.js'
+          ),
+        },
+      ];
+
+      fs.mkdirSync(targetDir, {
+        recursive: true,
+      });
+
+      for (const file of files) {
+        if (!fs.existsSync(file.source)) {
+          throw new Error(
+            `[LibreOffice] Required file not found:\n${file.source}`
+          );
+        }
+
+        const target = resolve(
+          targetDir,
+          file.name
+        );
+
+        fs.copyFileSync(
+          file.source,
+          target
+        );
+
+        console.log(
+          `[LibreOffice] Copied ${file.name} -> dist/libreoffice-wasm/${file.name}`
+        );
+      }
+
+      console.log(
+        '[LibreOffice] Same-origin worker files prepared successfully'
+      );
+    },
+  };
+}
+
+/*
+ * Cloudflare Pages/Workers _headers file.
+ *
+ * These headers are required for SharedArrayBuffer
+ * and therefore LibreOffice threaded WASM.
+ */
+function cloudflareHeadersPlugin(): Plugin {
+  return {
+    name: 'cloudflare-headers',
+
+    closeBundle() {
+      const outDir = resolve(
+        __dirname,
+        'dist'
+      );
+
+      if (!fs.existsSync(outDir)) {
+        console.warn(
+          '[Vite] dist directory does not exist; cannot create _headers'
+        );
+
+        return;
+      }
+
+      const headers = `/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+`;
+
+      fs.writeFileSync(
+        resolve(
+          outDir,
+          '_headers'
+        ),
+        headers
+      );
+
+      console.log(
+        '[Vite] Created Cloudflare _headers file'
+      );
     },
   };
 }
@@ -475,7 +664,10 @@ function flattenPagesPlugin(): Plugin {
         ) {
           moves.push({
             from: fileName,
-            to: fileName.replace('src/pages/', ''),
+            to: fileName.replace(
+              'src/pages/',
+              ''
+            ),
           });
         }
       }
@@ -491,14 +683,26 @@ function flattenPagesPlugin(): Plugin {
       }
 
       for (const { from, to } of moves) {
-        const oldPath = resolve(outDir, from);
-        const newPath = resolve(outDir, to);
+        const oldPath = resolve(
+          outDir,
+          from
+        );
 
-        if (!fs.existsSync(oldPath)) continue;
+        const newPath = resolve(
+          outDir,
+          to
+        );
 
-        fs.mkdirSync(resolve(newPath, '..'), {
-          recursive: true,
-        });
+        if (!fs.existsSync(oldPath)) {
+          continue;
+        }
+
+        fs.mkdirSync(
+          resolve(newPath, '..'),
+          {
+            recursive: true,
+          }
+        );
 
         if (fs.existsSync(newPath)) {
           fs.rmSync(newPath, {
@@ -506,10 +710,16 @@ function flattenPagesPlugin(): Plugin {
           });
         }
 
-        fs.renameSync(oldPath, newPath);
+        fs.renameSync(
+          oldPath,
+          newPath
+        );
       }
 
-      const pagesDir = resolve(outDir, 'src/pages');
+      const pagesDir = resolve(
+        outDir,
+        'src/pages'
+      );
 
       if (
         fs.existsSync(pagesDir) &&
@@ -518,7 +728,10 @@ function flattenPagesPlugin(): Plugin {
         fs.rmdirSync(pagesDir);
       }
 
-      const srcDir = resolve(outDir, 'src');
+      const srcDir = resolve(
+        outDir,
+        'src'
+      );
 
       if (
         fs.existsSync(srcDir) &&
@@ -547,9 +760,13 @@ function swPrecachePlugin(): Plugin {
 
       if (!outDir) return;
 
-      const workerAssets = Object.keys(bundle)
+      const workerAssets = Object.keys(
+        bundle
+      )
         .filter((fileName) =>
-          workerAssetPattern.test(fileName)
+          workerAssetPattern.test(
+            fileName
+          )
         )
         .sort();
 
@@ -559,7 +776,10 @@ function swPrecachePlugin(): Plugin {
         );
       }
 
-      const swPath = resolve(outDir, 'sw.js');
+      const swPath = resolve(
+        outDir,
+        'sw.js'
+      );
 
       if (!fs.existsSync(swPath)) {
         throw new Error(
@@ -567,16 +787,27 @@ function swPrecachePlugin(): Plugin {
         );
       }
 
-      const source = fs.readFileSync(swPath, 'utf8');
+      const source =
+        fs.readFileSync(
+          swPath,
+          'utf8'
+        );
 
-      if (!placeholderPattern.test(source)) {
+      if (
+        !placeholderPattern.test(
+          source
+        )
+      ) {
         throw new Error(
           '[sw-precache] could not find "const PRECACHE_ASSETS = [...]" in sw.js'
         );
       }
 
       const list = workerAssets
-        .map((asset) => `  '${asset}',`)
+        .map(
+          (asset) =>
+            `  '${asset}',`
+        )
         .join('\n');
 
       fs.writeFileSync(
@@ -595,73 +826,110 @@ function swPrecachePlugin(): Plugin {
 }
 
 function rewriteHtmlPathsPlugin(): Plugin {
-  const baseUrl = process.env.BASE_URL || '/';
-  const normalizedBase = baseUrl.replace(/\/?$/, '/');
+  const baseUrl =
+    process.env.BASE_URL || '/';
 
-  const escapedBase = normalizedBase.replace(
-    /[.*+?^${}()|[\]\\]/g,
-    '\\$&'
-  );
+  const normalizedBase =
+    baseUrl.replace(
+      /\/?$/,
+      '/'
+    );
+
+  const escapedBase =
+    normalizedBase.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      '\\$&'
+    );
 
   return {
     name: 'rewrite-html-paths',
     enforce: 'post',
 
     writeBundle(options, bundle) {
-      if (normalizedBase === '/') return;
+      if (
+        normalizedBase === '/'
+      ) {
+        return;
+      }
 
-      const outDir = options.dir;
+      const outDir =
+        options.dir;
 
       if (!outDir) return;
 
-      const hrefRegex = new RegExp(
-        `href="\\/(?!${escapedBase.slice(
-          1
-        )}|test\\/|http|\\/\\/)`,
-        'g'
-      );
-
-      const srcRegex = new RegExp(
-        `src="\\/(?!${escapedBase.slice(
-          1
-        )}|test\\/|http|\\/\\/)`,
-        'g'
-      );
-
-      const contentRegex = new RegExp(
-        `content="\\/(?!${escapedBase.slice(
-          1
-        )}|test\\/|http|\\/\\/)`,
-        'g'
-      );
-
-      for (const fileName of Object.keys(bundle)) {
-        if (!fileName.endsWith('.html')) continue;
-
-        const diskPath = resolve(outDir, fileName);
-
-        if (!fs.existsSync(diskPath)) continue;
-
-        const source = fs.readFileSync(
-          diskPath,
-          'utf8'
+      const hrefRegex =
+        new RegExp(
+          `href="\\/(?!${escapedBase.slice(
+            1
+          )}|test\\/|http|\\/\\/)`,
+          'g'
         );
 
-        const updated = source
-          .replace(
-            hrefRegex,
-            `href="${normalizedBase}`
+      const srcRegex =
+        new RegExp(
+          `src="\\/(?!${escapedBase.slice(
+            1
+          )}|test\\/|http|\\/\\/)`,
+          'g'
+        );
+
+      const contentRegex =
+        new RegExp(
+          `content="\\/(?!${escapedBase.slice(
+            1
+          )}|test\\/|http|\\/\\/)`,
+          'g'
+        );
+
+      for (const fileName of Object.keys(
+        bundle
+      )) {
+        if (
+          !fileName.endsWith(
+            '.html'
           )
-          .replace(
-            srcRegex,
-            `src="${normalizedBase}`
-          )
-          .replace(
-            contentRegex,
-            `content="${normalizedBase}`
+        ) {
+          continue;
+        }
+
+        const diskPath =
+          resolve(
+            outDir,
+            fileName
           );
 
-        if (updated !== source) {
+        if (
+          !fs.existsSync(
+            diskPath
+          )
+        ) {
+          continue;
+        }
+
+        const source =
+          fs.readFileSync(
+            diskPath,
+            'utf8'
+          );
+
+        const updated =
+          source
+            .replace(
+              hrefRegex,
+              `href="${normalizedBase}`
+            )
+            .replace(
+              srcRegex,
+              `src="${normalizedBase}`
+            )
+            .replace(
+              contentRegex,
+              `content="${normalizedBase}`
+            );
+
+        if (
+          updated !== source
+        ) {
           fs.writeFileSync(
             diskPath,
             updated
@@ -672,46 +940,10 @@ function rewriteHtmlPathsPlugin(): Plugin {
   };
 }
 
-/**
- * Creates Cloudflare Pages/Workers _headers file.
- *
- * These headers are required for SharedArrayBuffer and
- * therefore for LibreOffice WASM / threaded WASM operation.
- */
-function cloudflareHeadersPlugin(): Plugin {
-  return {
-    name: 'cloudflare-headers',
-
-    closeBundle() {
-      const outDir = resolve(__dirname, 'dist');
-
-      if (!fs.existsSync(outDir)) {
-        console.warn(
-          '[Vite] dist directory does not exist; cannot create _headers'
-        );
-        return;
-      }
-
-      const headers = `/*
-  Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Embedder-Policy: require-corp
-`;
-
-      fs.writeFileSync(
-        resolve(outDir, '_headers'),
-        headers
-      );
-
-      console.log(
-        '[Vite] Created Cloudflare _headers file'
-      );
-    },
-  };
-}
-
 export default defineConfig(() => {
   const USE_CDN =
-    process.env.VITE_USE_CDN === 'true';
+    process.env.VITE_USE_CDN ===
+    'true';
 
   if (USE_CDN) {
     console.log(
@@ -724,7 +956,10 @@ export default defineConfig(() => {
   }
 
   return {
-    base: (process.env.BASE_URL || '/').replace(
+    base: (
+      process.env.BASE_URL ||
+      '/'
+    ).replace(
       /\/?$/,
       '/'
     ),
@@ -739,27 +974,36 @@ export default defineConfig(() => {
       cloudflareHeadersPlugin(),
 
       handlebars({
-        partialDirectory: resolve(
-          __dirname,
-          'src/partials'
-        ),
+        partialDirectory:
+          resolve(
+            __dirname,
+            'src/partials'
+          ),
 
         context: {
           baseUrl: (
-            process.env.BASE_URL || '/'
-          ).replace(/\/?$/, '/'),
+            process.env.BASE_URL ||
+            '/'
+          ).replace(
+            /\/?$/,
+            '/'
+          ),
 
           simpleMode:
-            process.env.SIMPLE_MODE === 'true',
+            process.env.SIMPLE_MODE ===
+            'true',
 
           brandName:
-            process.env.VITE_BRAND_NAME || '',
+            process.env.VITE_BRAND_NAME ||
+            '',
 
           brandLogo:
-            process.env.VITE_BRAND_LOGO || '',
+            process.env.VITE_BRAND_LOGO ||
+            '',
 
           footerText:
-            process.env.VITE_FOOTER_TEXT || '',
+            process.env.VITE_FOOTER_TEXT ||
+            '',
 
           appVersion:
             process.env.npm_package_version ||
@@ -768,6 +1012,13 @@ export default defineConfig(() => {
       }),
 
       languageRouterPlugin(),
+
+      /*
+       * IMPORTANT:
+       * This copies the LibreOffice JS worker files
+       * to the same origin as pdf.veloxity.org.
+       */
+      copyLibreOfficeWorkerFilesPlugin(),
 
       flattenPagesPlugin(),
 
@@ -794,28 +1045,38 @@ export default defineConfig(() => {
       }),
 
       viteCompression({
-        algorithm: 'brotliCompress',
+        algorithm:
+          'brotliCompress',
+
         ext: '.br',
+
         threshold: 1024,
+
         filter:
           /\.(js|mjs|json|css|html|wasm|svg)$/i,
 
         compressionOptions: {
           params: {
-            [zlibConstants.BROTLI_PARAM_QUALITY]: 11,
+            [zlibConstants.BROTLI_PARAM_QUALITY]:
+              11,
 
             [zlibConstants.BROTLI_PARAM_MODE]:
               zlibConstants.BROTLI_MODE_GENERIC,
           },
         },
 
-        deleteOriginFile: false,
+        deleteOriginFile:
+          false,
       }),
 
       viteCompression({
-        algorithm: 'gzip',
+        algorithm:
+          'gzip',
+
         ext: '.gz',
+
         threshold: 1024,
+
         filter:
           /\.(js|mjs|json|css|html|wasm|svg)$/i,
 
@@ -823,33 +1084,46 @@ export default defineConfig(() => {
           level: 9,
         },
 
-        deleteOriginFile: false,
+        deleteOriginFile:
+          false,
       }),
     ],
 
     define: {
       __SIMPLE_MODE__: JSON.stringify(
-        process.env.SIMPLE_MODE === 'true'
+        process.env.SIMPLE_MODE ===
+          'true'
       ),
 
-      __DISABLE_GITHUB_STARS__: JSON.stringify(
-        process.env.DISABLE_GITHUB_STARS === 'true'
-      ),
+      __DISABLE_GITHUB_STARS__:
+        JSON.stringify(
+          process.env
+            .DISABLE_GITHUB_STARS ===
+            'true'
+        ),
 
       __BRAND_NAME__: JSON.stringify(
-        process.env.VITE_BRAND_NAME || ''
+        process.env.VITE_BRAND_NAME ||
+          ''
       ),
 
-      __DISABLED_TOOLS__: JSON.stringify(
-        (process.env.DISABLE_TOOLS || '')
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      ),
+      __DISABLED_TOOLS__:
+        JSON.stringify(
+          (
+            process.env
+              .DISABLE_TOOLS || ''
+          )
+            .split(',')
+            .map((s) =>
+              s.trim()
+            )
+            .filter(Boolean)
+        ),
 
-      __ENGINE_VERSION__: JSON.stringify(
-        engineVersion()
-      ),
+      __ENGINE_VERSION__:
+        JSON.stringify(
+          engineVersion()
+        ),
     },
 
     resolve: {
@@ -864,9 +1138,11 @@ export default defineConfig(() => {
           'src'
         ),
 
-        stream: 'stream-browserify',
+        stream:
+          'stream-browserify',
 
-        zlib: 'browserify-zlib',
+        zlib:
+          'browserify-zlib',
       },
     },
 
@@ -917,7 +1193,8 @@ export default defineConfig(() => {
       rollupOptions: {
         input: {
           main:
-            process.env.SIMPLE_MODE === 'true'
+            process.env.SIMPLE_MODE ===
+            'true'
               ? resolve(
                   __dirname,
                   'simple-index.html'
@@ -992,10 +1269,11 @@ export default defineConfig(() => {
             'src/pages/bookmark.html'
           ),
 
-          'table-of-contents': resolve(
-            __dirname,
-            'src/pages/table-of-contents.html'
-          ),
+          'table-of-contents':
+            resolve(
+              __dirname,
+              'src/pages/table-of-contents.html'
+            ),
 
           'pdf-to-json': resolve(
             __dirname,
@@ -1092,10 +1370,11 @@ export default defineConfig(() => {
             'src/pages/page-numbers.html'
           ),
 
-          'add-page-labels': resolve(
-            __dirname,
-            'src/pages/add-page-labels.html'
-          ),
+          'add-page-labels':
+            resolve(
+              __dirname,
+              'src/pages/add-page-labels.html'
+            ),
 
           'add-watermark': resolve(
             __dirname,
@@ -1127,25 +1406,28 @@ export default defineConfig(() => {
             'src/pages/adjust-colors.html'
           ),
 
-          'background-color': resolve(
-            __dirname,
-            'src/pages/background-color.html'
-          ),
+          'background-color':
+            resolve(
+              __dirname,
+              'src/pages/background-color.html'
+            ),
 
           'text-color': resolve(
             __dirname,
             'src/pages/text-color.html'
           ),
 
-          'remove-annotations': resolve(
-            __dirname,
-            'src/pages/remove-annotations.html'
-          ),
+          'remove-annotations':
+            resolve(
+              __dirname,
+              'src/pages/remove-annotations.html'
+            ),
 
-          'remove-blank-pages': resolve(
-            __dirname,
-            'src/pages/remove-blank-pages.html'
-          ),
+          'remove-blank-pages':
+            resolve(
+              __dirname,
+              'src/pages/remove-blank-pages.html'
+            ),
 
           'image-to-pdf': resolve(
             __dirname,
@@ -1177,10 +1459,11 @@ export default defineConfig(() => {
             'src/pages/reverse-pages.html'
           ),
 
-          'add-blank-page': resolve(
-            __dirname,
-            'src/pages/add-blank-page.html'
-          ),
+          'add-blank-page':
+            resolve(
+              __dirname,
+              'src/pages/add-blank-page.html'
+            ),
 
           'divide-pages': resolve(
             __dirname,
@@ -1202,10 +1485,11 @@ export default defineConfig(() => {
             'src/pages/n-up-pdf.html'
           ),
 
-          'combine-single-page': resolve(
-            __dirname,
-            'src/pages/combine-single-page.html'
-          ),
+          'combine-single-page':
+            resolve(
+              __dirname,
+              'src/pages/combine-single-page.html'
+            ),
 
           'view-metadata': resolve(
             __dirname,
@@ -1222,10 +1506,11 @@ export default defineConfig(() => {
             'src/pages/pdf-to-zip.html'
           ),
 
-          'alternate-merge': resolve(
-            __dirname,
-            'src/pages/alternate-merge.html'
-          ),
+          'alternate-merge':
+            resolve(
+              __dirname,
+              'src/pages/alternate-merge.html'
+            ),
 
           'duplex-collate': resolve(
             __dirname,
@@ -1237,20 +1522,23 @@ export default defineConfig(() => {
             'src/pages/compare-pdfs.html'
           ),
 
-          'add-attachments': resolve(
-            __dirname,
-            'src/pages/add-attachments.html'
-          ),
+          'add-attachments':
+            resolve(
+              __dirname,
+              'src/pages/add-attachments.html'
+            ),
 
-          'edit-attachments': resolve(
-            __dirname,
-            'src/pages/edit-attachments.html'
-          ),
+          'edit-attachments':
+            resolve(
+              __dirname,
+              'src/pages/edit-attachments.html'
+            ),
 
-          'extract-attachments': resolve(
-            __dirname,
-            'src/pages/extract-attachments.html'
-          ),
+          'extract-attachments':
+            resolve(
+              __dirname,
+              'src/pages/extract-attachments.html'
+            ),
 
           'ocr-pdf': resolve(
             __dirname,
@@ -1267,10 +1555,11 @@ export default defineConfig(() => {
             'src/pages/fix-page-size.html'
           ),
 
-          'remove-metadata': resolve(
-            __dirname,
-            'src/pages/remove-metadata.html'
-          ),
+          'remove-metadata':
+            resolve(
+              __dirname,
+              'src/pages/remove-metadata.html'
+            ),
 
           'decrypt-pdf': resolve(
             __dirname,
@@ -1292,25 +1581,28 @@ export default defineConfig(() => {
             'src/pages/linearize-pdf.html'
           ),
 
-          'remove-restrictions': resolve(
-            __dirname,
-            'src/pages/remove-restrictions.html'
-          ),
+          'remove-restrictions':
+            resolve(
+              __dirname,
+              'src/pages/remove-restrictions.html'
+            ),
 
-          'change-permissions': resolve(
-            __dirname,
-            'src/pages/change-permissions.html'
-          ),
+          'change-permissions':
+            resolve(
+              __dirname,
+              'src/pages/change-permissions.html'
+            ),
 
           'sanitize-pdf': resolve(
             __dirname,
             'src/pages/sanitize-pdf.html'
           ),
 
-          'page-dimensions': resolve(
-            __dirname,
-            'src/pages/page-dimensions.html'
-          ),
+          'page-dimensions':
+            resolve(
+              __dirname,
+              'src/pages/page-dimensions.html'
+            ),
 
           'bmp-to-pdf': resolve(
             __dirname,
@@ -1332,20 +1624,22 @@ export default defineConfig(() => {
             'src/pages/txt-to-pdf.html'
           ),
 
-          'markdown-to-pdf': resolve(
-            __dirname,
-            'src/pages/markdown-to-pdf.html'
-          ),
+          'markdown-to-pdf':
+            resolve(
+              __dirname,
+              'src/pages/markdown-to-pdf.html'
+            ),
 
           'pdf-to-bmp': resolve(
             __dirname,
             'src/pages/pdf-to-bmp.html'
           ),
 
-          'pdf-to-greyscale': resolve(
-            __dirname,
-            'src/pages/pdf-to-greyscale.html'
-          ),
+          'pdf-to-greyscale':
+            resolve(
+              __dirname,
+              'src/pages/pdf-to-greyscale.html'
+            ),
 
           'pdf-to-jpg': resolve(
             __dirname,
@@ -1382,20 +1676,22 @@ export default defineConfig(() => {
             'src/pages/extract-images.html'
           ),
 
-          'pdf-to-markdown': resolve(
-            __dirname,
-            'src/pages/pdf-to-markdown.html'
-          ),
+          'pdf-to-markdown':
+            resolve(
+              __dirname,
+              'src/pages/pdf-to-markdown.html'
+            ),
 
           'rasterize-pdf': resolve(
             __dirname,
             'src/pages/rasterize-pdf.html'
           ),
 
-          'prepare-pdf-for-ai': resolve(
-            __dirname,
-            'src/pages/prepare-pdf-for-ai.html'
-          ),
+          'prepare-pdf-for-ai':
+            resolve(
+              __dirname,
+              'src/pages/prepare-pdf-for-ai.html'
+            ),
 
           'pdf-layers': resolve(
             __dirname,
@@ -1432,10 +1728,11 @@ export default defineConfig(() => {
             'src/pages/excel-to-pdf.html'
           ),
 
-          'powerpoint-to-pdf': resolve(
-            __dirname,
-            'src/pages/powerpoint-to-pdf.html'
-          ),
+          'powerpoint-to-pdf':
+            resolve(
+              __dirname,
+              'src/pages/powerpoint-to-pdf.html'
+            ),
 
           'pdf-booklet': resolve(
             __dirname,
@@ -1522,10 +1819,11 @@ export default defineConfig(() => {
             'src/pages/pdf-to-svg.html'
           ),
 
-          'extract-tables': resolve(
-            __dirname,
-            'src/pages/extract-tables.html'
-          ),
+          'extract-tables':
+            resolve(
+              __dirname,
+              'src/pages/extract-tables.html'
+            ),
 
           'pdf-to-csv': resolve(
             __dirname,
@@ -1542,30 +1840,33 @@ export default defineConfig(() => {
             'src/pages/pdf-to-text.html'
           ),
 
-          'digital-sign-pdf': resolve(
-            __dirname,
-            'src/pages/digital-sign-pdf.html'
-          ),
+          'digital-sign-pdf':
+            resolve(
+              __dirname,
+              'src/pages/digital-sign-pdf.html'
+            ),
 
           'timestamp-pdf': resolve(
             __dirname,
             'src/pages/timestamp-pdf.html'
           ),
 
-          'validate-signature-pdf': resolve(
-            __dirname,
-            'src/pages/validate-signature-pdf.html'
-          ),
+          'validate-signature-pdf':
+            resolve(
+              __dirname,
+              'src/pages/validate-signature-pdf.html'
+            ),
 
           'email-to-pdf': resolve(
             __dirname,
             'src/pages/email-to-pdf.html'
           ),
 
-          'font-to-outline': resolve(
-            __dirname,
-            'src/pages/font-to-outline.html'
-          ),
+          'font-to-outline':
+            resolve(
+              __dirname,
+              'src/pages/font-to-outline.html'
+            ),
 
           'deskew-pdf': resolve(
             __dirname,
@@ -1577,18 +1878,24 @@ export default defineConfig(() => {
             'src/pages/wasm-settings.html'
           ),
 
-          'bates-numbering': resolve(
-            __dirname,
-            'src/pages/bates-numbering.html'
-          ),
+          'bates-numbering':
+            resolve(
+              __dirname,
+              'src/pages/bates-numbering.html'
+            ),
         },
 
         output: {
-          assetFileNames: (assetInfo) => {
+          assetFileNames: (
+            assetInfo
+          ) => {
             const name =
-              assetInfo.names?.[0] ?? '';
+              assetInfo.names?.[0] ??
+              '';
 
-            if (name.endsWith('.mjs')) {
+            if (
+              name.endsWith('.mjs')
+            ) {
               return 'assets/[name]-[hash].js';
             }
 
@@ -1601,10 +1908,12 @@ export default defineConfig(() => {
     test: {
       globals: true,
       environment: 'jsdom',
-      setupFiles: './src/tests/setup.ts',
+      setupFiles:
+        './src/tests/setup.ts',
 
       coverage: {
-        provider: 'v8' as const,
+        provider:
+          'v8' as const,
 
         reporter: [
           'text',
