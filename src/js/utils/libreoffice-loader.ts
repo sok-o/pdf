@@ -2,57 +2,85 @@
  * LibreOffice WASM Converter Wrapper
  *
  * Uses @matbee/libreoffice-converter package for document conversion.
- * Handles progress tracking and provides simpler API.
+ *
+ * Deployment architecture:
+ *
+ *   R2:
+ *     soffice.wasm.gz
+ *     soffice.data.gz
+ *
+ *   Same-origin Cloudflare Pages:
+ *     soffice.js
+ *     soffice.worker.js
+ *     browser.worker.global.js
+ *
+ * The Worker JavaScript files MUST be same-origin because browsers
+ * do not allow a Worker to be constructed from a different origin.
+ *
+ * The large WASM/data files can be fetched from R2.
  */
 
 import { WorkerBrowserConverter } from '@matbee/libreoffice-converter/browser';
 import type { InputFormat } from '@matbee/libreoffice-converter/browser';
 
-const LIBREOFFICE_LOCAL_PATH =
+const LIBREOFFICE_R2_PATH =
   import.meta.env.VITE_WASM_LIBREOFFICE_URL ||
-  '/libreoffice-wasm/';
+  'https://pub-765ae27e5d3a4d09bda67cabc7470e15.r2.dev/libreoffice-wasm/';
 
-/*
- * IMPORTANT:
+/**
+ * Same-origin path used for the JavaScript worker/runtime files.
  *
- * LibreOffice WASM/data can be loaded from R2/CDN.
- * However, browser Worker scripts must be same-origin.
+ * These files must exist in the deployed site:
  *
- * Therefore:
- *   - soffice.wasm.gz  -> basePath (R2 or local)
- *   - soffice.data.gz  -> basePath (R2 or local)
- *   - soffice.js        -> same-origin
- *   - soffice.worker.js -> same-origin
- *   - browser.worker.global.js -> same-origin
- *
- * This prevents:
- *
- * SecurityError:
- * Script at 'https://...r2.dev/...'
- * cannot be accessed from origin 'https://pdf.veloxity.org'
+ *   /libreoffice-wasm/soffice.js
+ *   /libreoffice-wasm/soffice.worker.js
+ *   /libreoffice-wasm/browser.worker.global.js
  */
-
-const LIBREOFFICE_WORKER_PATH = `${import.meta.env.BASE_URL}libreoffice-wasm/`;
+const LIBREOFFICE_LOCAL_PATH =
+  `${import.meta.env.BASE_URL}libreoffice-wasm/`;
 
 export interface LoadProgress {
-  phase: 'loading' | 'initializing' | 'converting' | 'complete' | 'ready';
+  phase:
+    | 'loading'
+    | 'initializing'
+    | 'converting'
+    | 'complete'
+    | 'ready';
+
   percent: number;
   message: string;
 }
 
-export type ProgressCallback = (progress: LoadProgress) => void;
+export type ProgressCallback =
+  (progress: LoadProgress) => void;
 
 // Singleton for converter instance
-let converterInstance: LibreOfficeConverter | null = null;
+let converterInstance:
+  LibreOfficeConverter | null = null;
 
 const GZIP_MAGIC_FIRST = 0x1f;
 const GZIP_MAGIC_SECOND = 0x8b;
 
+/**
+ * Fetch a gzip-compressed WASM/data file from R2,
+ * decompress it in the browser, and return a Blob URL.
+ *
+ * This avoids requiring the browser to execute the
+ * gzip file directly as WASM.
+ */
 async function fetchAsDecompressedUrl(
   url: string,
   mimeType: string
 ): Promise<string> {
-  const response = await fetch(url);
+  console.log(
+    `[LibreOffice] Fetching: ${url}`
+  );
+
+  const response = await fetch(url, {
+    mode: 'cors',
+    credentials: 'omit',
+    cache: 'force-cache',
+  });
 
   if (!response.ok) {
     throw new Error(
@@ -70,38 +98,66 @@ async function fetchAsDecompressedUrl(
     head[0] === GZIP_MAGIC_FIRST &&
     head[1] === GZIP_MAGIC_SECOND
   ) {
-    const decompressed = blob
-      .stream()
-      .pipeThrough(new DecompressionStream('gzip'));
+    console.log(
+      `[LibreOffice] Decompressing gzip asset: ${url}`
+    );
 
-    blob = await new Response(decompressed).blob();
+    if (
+      typeof DecompressionStream ===
+      'undefined'
+    ) {
+      throw new Error(
+        'This browser does not support DecompressionStream.'
+      );
+    }
+
+    const decompressed =
+      blob
+        .stream()
+        .pipeThrough(
+          new DecompressionStream('gzip')
+        );
+
+    blob = await new Response(
+      decompressed
+    ).blob();
   }
 
-  return URL.createObjectURL(
-    new Blob([blob], { type: mimeType })
+  const objectUrl =
+    URL.createObjectURL(
+      new Blob([blob], {
+        type: mimeType,
+      })
+    );
+
+  console.log(
+    `[LibreOffice] Created local Blob URL for ${url}`
   );
+
+  return objectUrl;
 }
 
 export class LibreOfficeConverter {
-  private converter: WorkerBrowserConverter | null = null;
+  private converter:
+    | WorkerBrowserConverter
+    | null = null;
+
   private initialized = false;
   private initializing = false;
-  private basePath: string;
 
-  constructor(basePath?: string) {
-    this.basePath =
-      basePath || LIBREOFFICE_LOCAL_PATH;
-  }
+  constructor() {}
 
   async initialize(
     onProgress?: ProgressCallback
   ): Promise<void> {
-    if (this.initialized) return;
+    if (this.initialized) {
+      return;
+    }
 
     if (this.initializing) {
       while (this.initializing) {
-        await new Promise((r) =>
-          setTimeout(r, 100)
+        await new Promise((resolve) =>
+          setTimeout(resolve, 100)
         );
       }
 
@@ -110,63 +166,73 @@ export class LibreOfficeConverter {
 
     this.initializing = true;
 
-    let progressCallback = onProgress;
+    let progressCallback =
+      onProgress;
 
     try {
       progressCallback?.({
         phase: 'loading',
         percent: 0,
-        message: 'Loading conversion engine...',
+        message:
+          'Loading conversion engine...',
       });
 
       /*
-       * WASM and data files.
-       *
-       * These may come from R2/CDN.
+       * ---------------------------------------------------------
+       * 1. Fetch the large WASM/data files from R2.
+       * ---------------------------------------------------------
        */
-      const [sofficeWasmUrl, sofficeDataUrl] =
-        await Promise.all([
-          fetchAsDecompressedUrl(
-            `${this.basePath}soffice.wasm.gz`,
-            'application/wasm'
-          ),
 
-          fetchAsDecompressedUrl(
-            `${this.basePath}soffice.data.gz`,
-            'application/octet-stream'
-          ),
-        ]);
-
-      /*
-       * IMPORTANT:
-       *
-       * Worker JavaScript files are deliberately loaded
-       * from the same origin as the application.
-       *
-       * Do NOT change these back to this.basePath.
-       */
-      const workerBase =
-        LIBREOFFICE_WORKER_PATH.endsWith('/')
-          ? LIBREOFFICE_WORKER_PATH
-          : `${LIBREOFFICE_WORKER_PATH}/`;
-
-      const sofficeJs =
-        `${workerBase}soffice.js`;
-
-      const sofficeWorkerJs =
-        `${workerBase}soffice.worker.js`;
-
-      const browserWorkerJs =
-        `${workerBase}browser.worker.global.js`;
+      const wasmBase =
+        LIBREOFFICE_R2_PATH.endsWith('/')
+          ? LIBREOFFICE_R2_PATH
+          : `${LIBREOFFICE_R2_PATH}/`;
 
       console.log(
-        '[LibreOffice] WASM/data base:',
-        this.basePath
+        '[LibreOffice] R2 base:',
+        wasmBase
       );
 
+      const [
+        sofficeWasmUrl,
+        sofficeDataUrl,
+      ] = await Promise.all([
+        fetchAsDecompressedUrl(
+          `${wasmBase}soffice.wasm.gz`,
+          'application/wasm'
+        ),
+
+        fetchAsDecompressedUrl(
+          `${wasmBase}soffice.data.gz`,
+          'application/octet-stream'
+        ),
+      ]);
+
+      /*
+       * ---------------------------------------------------------
+       * 2. Use SAME-ORIGIN JavaScript worker files.
+       * ---------------------------------------------------------
+       *
+       * These MUST NOT point to R2.
+       */
+
+      const localBase =
+        LIBREOFFICE_LOCAL_PATH.endsWith('/')
+          ? LIBREOFFICE_LOCAL_PATH
+          : `${LIBREOFFICE_LOCAL_PATH}/`;
+
+      const sofficeJs =
+        `${localBase}soffice.js`;
+
+      const sofficeWorkerJs =
+        `${localBase}soffice.worker.js`;
+
+      const browserWorkerJs =
+        `${localBase}browser.worker.global.js`;
+
       console.log(
-        '[LibreOffice] Worker base:',
-        workerBase
+        '[LibreOffice] Same-origin worker base:',
+        localBase
       );
 
       console.log(
@@ -184,20 +250,96 @@ export class LibreOfficeConverter {
         browserWorkerJs
       );
 
+      /*
+       * ---------------------------------------------------------
+       * 3. Verify that the worker files are actually reachable.
+       * ---------------------------------------------------------
+       *
+       * This converts the previous vague "Worker load timeout"
+       * into a useful error if Cloudflare is returning 404/HTML.
+       */
+
+      const workerUrls = [
+        sofficeJs,
+        sofficeWorkerJs,
+        browserWorkerJs,
+      ];
+
+      for (const workerUrl of workerUrls) {
+        console.log(
+          `[LibreOffice] Checking worker: ${workerUrl}`
+        );
+
+        const response = await fetch(
+          workerUrl,
+          {
+            method: 'GET',
+            cache: 'no-store',
+            credentials: 'same-origin',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `LibreOffice worker file is not accessible: ${workerUrl} (HTTP ${response.status})`
+          );
+        }
+
+        const contentType =
+          response.headers.get(
+            'content-type'
+          ) || '';
+
+        console.log(
+          `[LibreOffice] Worker response: ${workerUrl} -> ${response.status} ${contentType}`
+        );
+
+        /*
+         * Cloudflare Pages can return HTML for a
+         * missing asset through fallback routing.
+         *
+         * Catch that here instead of allowing Worker()
+         * to eventually time out.
+         */
+        if (
+          contentType.includes('text/html')
+        ) {
+          throw new Error(
+            `LibreOffice worker URL returned HTML instead of JavaScript: ${workerUrl}`
+          );
+        }
+      }
+
+      progressCallback?.({
+        phase: 'initializing',
+        percent: 50,
+        message:
+          'Initialising conversion engine...',
+      });
+
+      /*
+       * ---------------------------------------------------------
+       * 4. Create the browser converter.
+       * ---------------------------------------------------------
+       */
+
       this.converter =
         new WorkerBrowserConverter({
           /*
-           * Same-origin worker files.
+           * SAME-ORIGIN JS files
            */
           sofficeJs,
           sofficeWorkerJs,
           browserWorkerJs,
 
           /*
-           * Decompressed blob URLs for WASM/data.
+           * R2 WASM/data converted to local Blob URLs
            */
-          sofficeWasm: sofficeWasmUrl,
-          sofficeData: sofficeDataUrl,
+          sofficeWasm:
+            sofficeWasmUrl,
+
+          sofficeData:
+            sofficeDataUrl,
 
           verbose: false,
 
@@ -210,16 +352,17 @@ export class LibreOfficeConverter {
               progressCallback &&
               !this.initialized
             ) {
-              const simplifiedMessage =
-                `Loading conversion engine (${Math.round(
-                  info.percent
-                )}%)...`;
-
               progressCallback({
                 phase:
                   info.phase as LoadProgress['phase'],
-                percent: info.percent,
-                message: simplifiedMessage,
+
+                percent:
+                  info.percent,
+
+                message:
+                  `Loading conversion engine (${Math.round(
+                    info.percent
+                  )}%)...`,
               });
             }
           },
@@ -232,11 +375,17 @@ export class LibreOfficeConverter {
 
           onError: (error: Error) => {
             console.error(
-              '[LibreOffice] Error:',
+              '[LibreOffice] Worker error:',
               error
             );
           },
         });
+
+      /*
+       * ---------------------------------------------------------
+       * 5. Initialise LibreOffice.
+       * ---------------------------------------------------------
+       */
 
       await this.converter.initialize();
 
@@ -245,10 +394,28 @@ export class LibreOfficeConverter {
       progressCallback?.({
         phase: 'ready',
         percent: 100,
-        message: 'Conversion engine ready!',
+        message:
+          'Conversion engine ready!',
       });
 
       progressCallback = undefined;
+
+      console.log(
+        '[LibreOffice] Initialisation complete.'
+      );
+    } catch (error) {
+      console.error(
+        '[LibreOffice] Initialisation FAILED:',
+        error
+      );
+
+      /*
+       * Reset state so a later attempt can retry.
+       */
+      this.converter = null;
+      this.initialized = false;
+
+      throw error;
     } finally {
       this.initializing = false;
     }
@@ -279,33 +446,18 @@ export class LibreOfficeConverter {
     );
 
     try {
-      console.log(
-        '[LibreOffice] Reading file as ArrayBuffer...'
-      );
-
       const arrayBuffer =
         await file.arrayBuffer();
 
       const uint8Array =
-        new Uint8Array(arrayBuffer);
+        new Uint8Array(
+          arrayBuffer
+        );
 
       console.log(
-        `[LibreOffice] File loaded, ${uint8Array.length} bytes`
+        `[LibreOffice] File loaded: ${uint8Array.length} bytes`
       );
 
-      console.log(
-        '[LibreOffice] Calling converter.convert() with buffer...'
-      );
-
-      const startTime = Date.now();
-
-      /*
-       * Detect input format from file extension.
-       *
-       * This is particularly important for CSV,
-       * because LibreOffice needs the input format
-       * to apply the correct import filter.
-       */
       const ext =
         file.name
           .split('.')
@@ -313,8 +465,11 @@ export class LibreOfficeConverter {
           ?.toLowerCase() || '';
 
       console.log(
-        `[LibreOffice] Detected format from extension: ${ext}`
+        `[LibreOffice] Input format: ${ext}`
       );
+
+      const startTime =
+        Date.now();
 
       const result =
         await this.converter.convert(
@@ -331,22 +486,28 @@ export class LibreOfficeConverter {
         Date.now() - startTime;
 
       console.log(
-        `[LibreOffice] Conversion complete! Duration: ${duration}ms, Size: ${result.data.length} bytes`
+        `[LibreOffice] Conversion complete in ${duration}ms`
+      );
+
+      console.log(
+        `[LibreOffice] Output size: ${result.data.length} bytes`
       );
 
       /*
-       * Create a normal Uint8Array copy.
-       *
-       * This avoids SharedArrayBuffer type issues
-       * when constructing the final Blob.
+       * Always copy the result into an ordinary
+       * Uint8Array before creating the Blob.
        */
       const data =
-        new Uint8Array(result.data);
+        new Uint8Array(
+          result.data
+        );
 
       return new Blob(
         [data],
         {
-          type: result.mimeType,
+          type:
+            result.mimeType ||
+            'application/pdf',
         }
       );
     } catch (error) {
@@ -399,15 +560,16 @@ export class LibreOfficeConverter {
 
     this.converter = null;
     this.initialized = false;
+    this.initializing = false;
   }
 }
 
 export function getLibreOfficeConverter(
-  basePath?: string
+  _basePath?: string
 ): LibreOfficeConverter {
   if (!converterInstance) {
     converterInstance =
-      new LibreOfficeConverter(basePath);
+      new LibreOfficeConverter();
   }
 
   return converterInstance;
