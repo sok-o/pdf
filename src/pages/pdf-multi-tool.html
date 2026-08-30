@@ -7,28 +7,34 @@
     <!-- Primary Meta Tags -->
     <meta
       name="title"
-      content="PDF Multi Tool Online Free - PDF Multi Tool | BentoPDF"
+      content="PDF Multi Tool Online Free - PDF Multi Tool | PDF Editor"
     />
     <meta
       name="description"
       content="★ PDF Multi Tool online free - Edit PDFs with multiple tools easily ★ No signup ★ Unlimited files ★ Privacy-first ★ Works in browser ★ Fast & secure"
     />
     <meta name="keywords" content="pdf multi tool, online pdf" />
-    <meta name="author" content="BentoPDF" />
+    <meta name="author" content="PDF Editor" />
     <meta
       name="robots"
       content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
     />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.bentopdf.com/pdf-multi-tool" />
+    <link
+      rel="canonical"
+      href="https://pdf.veloxity.org/pdf-multi-tool"
+    />
 
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.bentopdf.com/pdf-multi-tool" />
+    <meta
+      property="og:url"
+      content="https://pdf.veloxity.org/pdf-multi-tool"
+    />
     <meta
       property="og:title"
-      content="PDF Multi Tool Online Free - PDF Multi Tool | BentoPDF"
+      content="PDF Multi Tool Online Free - PDF Multi Tool | PDF Editor"
     />
     <meta
       property="og:description"
@@ -36,37 +42,51 @@
     />
     <meta
       property="og:image"
-      content="https://www.bentopdf.com/images/og-pdf-multi-tool.png"
+      content="https://pdf.veloxity.org/images/og-pdf-multi-tool.png"
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="BentoPDF" />
+    <meta property="og:site_name" content="PDF Editor" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:url"
-      content="https://www.bentopdf.com/pdf-multi-tool"
+      content="https://pdf.veloxity.org/pdf-multi-tool"
     />
-    <meta name="twitter:title" content="PDF Multi Tool Free" />
+    <meta
+      name="twitter:title"
+      content="PDF Multi Tool Free"
+    />
     <meta
       name="twitter:description"
       content="★ PDF Multi Tool online free - Edit PDFs with multiple tools easily ★ No signup ★ Unlimited files ★ Privacy-first ★ Works in browser ★ Fast & secure"
     />
     <meta
       name="twitter:image"
-      content="https://www.bentopdf.com/images/twitter-pdf-multi-tool.png"
+      content="https://pdf.veloxity.org/images/twitter-pdf-multi-tool.png"
     />
-    <meta name="twitter:site" content="@BentoPDF" />
 
     <!-- Mobile Web App -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="PDF Multi Tool" />
+    <meta
+      name="mobile-web-app-capable"
+      content="yes"
+    />
+    <meta
+      name="apple-mobile-web-app-capable"
+      content="yes"
+    />
+    <meta
+      name="apple-mobile-web-app-title"
+      content="PDF Multi Tool"
+    />
 
-    <title>PDF Multi Tool - BentoPDF</title>
+    <title>PDF Multi Tool - PDF Editor</title>
 
-    <link href="/src/css/styles.css" rel="stylesheet" />
+    <link
+      href="/src/css/styles.css"
+      rel="stylesheet"
+    />
 
     <style>
       /* Hide scrollbar for toolbar overflow */
@@ -96,10 +116,17 @@
     </style>
 
     <!-- Web App Manifest -->
-    <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="manifest"
+      href="/site.webmanifest"
+    />
 
     <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/images/favicon.svg"
+    />
     <link
       rel="icon"
       type="image/png"
@@ -117,47 +144,70 @@
       sizes="180x180"
       href="/images/apple-touch-icon.png"
     />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link
+      rel="icon"
+      href="/favicon.ico"
+      sizes="32x32"
+    />
   </head>
 
   <body
     class="antialiased bg-gray-900 h-[100dvh] overflow-hidden flex flex-col"
   >
     <!-- Navigation -->
-    <nav class="bg-gray-800 border-b border-gray-700 flex-none z-30">
+    <nav
+      class="bg-gray-800 border-b border-gray-700 flex-none z-30"
+    >
       <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex-shrink-0 flex items-center">
-            <img
-              src="{{baseUrl}}{{#if brandLogo}}{{brandLogo}}{{else}}images/favicon-no-bg.svg{{/if}}"
-              alt="{{#if brandName}}{{brandName}}{{else}}Bento PDF{{/if}} Logo"
-              class="h-8 w-8"
-            />
-            <span class="text-white font-bold text-xl ml-2">
-              <a href="/"
-                >{{#if brandName}}{{brandName}}{{else}}BentoPDF{{/if}}</a
-              >
-            </span>
-            <span class="text-gray-400 ml-3 text-sm sm:text-base"
-              >PDF Multi Tool</span
+        <div
+          class="flex justify-between items-center h-16"
+        >
+          <div
+            class="flex-shrink-0 flex items-center"
+          >
+            <span
+              class="text-white font-bold text-xl"
             >
+              <a href="/">
+                {{#if brandName}}{{brandName}}{{else}}PDF Editor{{/if}}
+              </a>
+            </span>
+
+            <span
+              class="text-gray-400 ml-3 text-sm sm:text-base"
+            >
+              PDF Multi Tool
+            </span>
           </div>
+
           <button
             id="close-tool-btn"
             class="flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-            <span data-i18n="common.close">Close</span>
+            <i
+              data-lucide="x"
+              class="w-4 h-4 sm:w-5 sm:h-5"
+            ></i>
+
+            <span
+              data-i18n="common.close"
+            >
+              Close
+            </span>
           </button>
         </div>
       </div>
     </nav>
 
     <!-- SEO H1 (visually hidden but present for search engines) -->
-    <h1 class="sr-only">PDF Multi Tool Free Online - Edit & Organize PDFs</h1>
+    <h1 class="sr-only">
+      PDF Multi Tool Free Online - Edit & Organize PDFs
+    </h1>
 
     <!-- Main Container -->
-    <div class="flex flex-col flex-1 overflow-hidden relative">
+    <div
+      class="flex flex-col flex-1 overflow-hidden relative"
+    >
       <!-- Toolbar -->
       <div
         class="bg-gray-800 border-b border-gray-700 p-2 sm:p-3 toolbar-container flex-none z-20"
@@ -170,195 +220,322 @@
             id="upload-pdfs-btn"
             class="flex items-center gap-1 sm:gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="upload" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden sm:inline" data-i18n="multiTool.uploadPdfs"
-              >Upload PDFs</span
+            <i
+              data-lucide="upload"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden sm:inline"
+              data-i18n="multiTool.uploadPdfs"
             >
-            <span class="sm:hidden" data-i18n="multiTool.upload">Upload</span>
+              Upload PDFs
+            </span>
+
+            <span
+              class="sm:hidden"
+              data-i18n="multiTool.upload"
+            >
+              Upload
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
 
           <!-- Add Blank -->
           <button
             id="add-blank-page-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="file-plus" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden sm:inline" data-i18n="multiTool.addBlankPage"
-              >Add Blank Page</span
+            <i
+              data-lucide="file-plus"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden sm:inline"
+              data-i18n="multiTool.addBlankPage"
             >
+              Add Blank Page
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
+
           <span
             class="text-gray-400 text-xs sm:text-sm md:inline"
             data-i18n="multiTool.edit"
-            >Edit:</span
           >
+            Edit:
+          </span>
 
           <!-- Undo / Redo / Reset -->
           <button
             id="undo-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="undo-2" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline" data-i18n="multiTool.undo"
-              >Undo</span
+            <i
+              data-lucide="undo-2"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden lg:inline"
+              data-i18n="multiTool.undo"
             >
+              Undo
+            </span>
           </button>
 
           <button
             id="redo-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="redo-2" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline" data-i18n="multiTool.redo"
-              >Redo</span
+            <i
+              data-lucide="redo-2"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden lg:inline"
+              data-i18n="multiTool.redo"
             >
+              Redo
+            </span>
           </button>
 
           <button
             id="reset-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="refresh-ccw" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline" data-i18n="multiTool.reset"
-              >Reset</span
+            <i
+              data-lucide="refresh-ccw"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden lg:inline"
+              data-i18n="multiTool.reset"
             >
+              Reset
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
 
           <!-- Selection -->
           <span
             class="text-gray-400 text-xs sm:text-sm md:inline"
             data-i18n="multiTool.selection"
-            >Selection:</span
           >
+            Selection:
+          </span>
 
           <button
             id="select-all-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="check-square" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline" data-i18n="multiTool.selectAll"
-              >Select All</span
+            <i
+              data-lucide="check-square"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden lg:inline"
+              data-i18n="multiTool.selectAll"
             >
+              Select All
+            </span>
           </button>
 
           <button
             id="deselect-all-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="square" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline" data-i18n="multiTool.deselectAll"
-              >Deselect All</span
+            <i
+              data-lucide="square"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden lg:inline"
+              data-i18n="multiTool.deselectAll"
             >
+              Deselect All
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
 
           <!-- Rotate -->
           <span
             class="text-gray-400 text-xs sm:text-sm md:inline"
             data-i18n="multiTool.rotate"
-            >Rotate:</span
           >
+            Rotate:
+          </span>
+
           <button
             id="bulk-rotate-left-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="rotate-ccw" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden xl:inline" data-i18n="multiTool.rotateLeft"
-              >Left</span
+            <i
+              data-lucide="rotate-ccw"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden xl:inline"
+              data-i18n="multiTool.rotateLeft"
             >
+              Left
+            </span>
           </button>
 
           <button
             id="bulk-rotate-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="rotate-cw" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden xl:inline" data-i18n="multiTool.rotateRight"
-              >Right</span
+            <i
+              data-lucide="rotate-cw"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden xl:inline"
+              data-i18n="multiTool.rotateRight"
             >
+              Right
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
+
           <span
             class="text-gray-400 text-xs sm:text-sm md:inline"
             data-i18n="multiTool.transform"
-            >Transform:</span
           >
+            Transform:
+          </span>
 
           <!-- Duplicate / Split -->
           <button
             id="bulk-duplicate-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="copy" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden xl:inline" data-i18n="multiTool.duplicate"
-              >Duplicate</span
+            <i
+              data-lucide="copy"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden xl:inline"
+              data-i18n="multiTool.duplicate"
             >
+              Duplicate
+            </span>
           </button>
 
           <button
             id="bulk-split-btn"
             class="flex items-center gap-1 sm:gap-2 bg-gray-700 hover:bg-gray-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="scissors" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden xl:inline" data-i18n="multiTool.split"
-              >Split</span
+            <i
+              data-lucide="scissors"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden xl:inline"
+              data-i18n="multiTool.split"
             >
+              Split
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
+
           <span
             class="text-gray-400 text-xs sm:text-sm md:inline"
             data-i18n="multiTool.clear"
-            >Clear:</span
           >
+            Clear:
+          </span>
 
           <!-- Delete -->
           <button
             id="bulk-delete-btn"
             class="flex items-center gap-1 sm:gap-2 bg-red-500 hover:bg-red-700 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="trash-2" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden xl:inline" data-i18n="multiTool.delete"
-              >Delete</span
+            <i
+              data-lucide="trash-2"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden xl:inline"
+              data-i18n="multiTool.delete"
             >
+              Delete
+            </span>
           </button>
 
-          <div class="border-l border-gray-600 h-5 sm:h-6 mx-1"></div>
+          <div
+            class="border-l border-gray-600 h-5 sm:h-6 mx-1"
+          ></div>
 
           <!-- Download -->
           <span
             class="text-gray-400 text-xs sm:text-sm md:inline"
             data-i18n="multiTool.download"
-            >Download:</span
           >
+            Download:
+          </span>
+
           <button
             id="bulk-download-btn"
             class="flex items-center gap-1 sm:gap-2 bg-green-600 hover:bg-green-700 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="download" class="w-3 h-3 sm:w-4 sm:h-4"></i>
+            <i
+              data-lucide="download"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
             <span
               class="hidden xl:inline"
               data-i18n="multiTool.downloadSelected"
-              >Download Selected</span
             >
+              Download Selected
+            </span>
           </button>
 
           <button
             id="export-pdf-btn"
             class="flex items-center gap-1 sm:gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm md:text-base"
           >
-            <i data-lucide="download" class="w-3 h-3 sm:w-4 sm:h-4"></i>
-            <span class="hidden xl:inline" data-i18n="multiTool.exportPdf"
-              >Export PDF</span
+            <i
+              data-lucide="download"
+              class="w-3 h-3 sm:w-4 sm:h-4"
+            ></i>
+
+            <span
+              class="hidden xl:inline"
+              data-i18n="multiTool.exportPdf"
             >
+              Export PDF
+            </span>
           </button>
         </div>
       </div>
@@ -375,18 +552,21 @@
           <i
             class="ph ph-upload-simple inline-block text-5xl sm:text-6xl text-gray-400 mb-3 sm:mb-4"
           ></i>
+
           <p
             class="text-gray-300 text-base sm:text-lg mb-1 sm:mb-2"
             data-i18n="multiTool.uploadPdfFiles"
           >
             Select PDF or image files
           </p>
+
           <p
             class="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4"
             data-i18n="multiTool.dragAndDrop"
           >
             Drag and drop PDF or image files here, or click to select
           </p>
+
           <input
             type="file"
             id="pdf-file-input"
@@ -394,6 +574,7 @@
             multiple
             class="hidden"
           />
+
           <button
             id="pdf-file-input-select-btn"
             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-6 py-2 rounded text-sm sm:text-base"
@@ -415,13 +596,18 @@
       id="loading-overlay"
       class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
     >
-      <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
-        <div class="flex items-center justify-center mb-4">
+      <div
+        class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4"
+      >
+        <div
+          class="flex items-center justify-center mb-4"
+        >
           <i
             data-lucide="loader"
             class="w-12 h-12 text-indigo-400 animate-spin"
           ></i>
         </div>
+
         <p
           id="loading-text"
           class="text-white text-center text-lg mb-4"
@@ -429,7 +615,10 @@
         >
           Rendering pages...
         </p>
-        <div class="w-full bg-gray-700 rounded-full h-2.5">
+
+        <div
+          class="w-full bg-gray-700 rounded-full h-2.5"
+        >
           <div
             id="loading-progress"
             class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300"
@@ -447,14 +636,22 @@
       <div
         class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 border border-gray-700"
       >
-        <div class="flex items-center justify-center mb-4">
+        <div
+          class="flex items-center justify-center mb-4"
+        >
           <div id="modal-icon"></div>
         </div>
+
         <h3
           id="modal-title"
           class="text-xl font-bold text-white text-center mb-2"
         ></h3>
-        <p id="modal-message" class="text-gray-300 text-center mb-6"></p>
+
+        <p
+          id="modal-message"
+          class="text-gray-300 text-center mb-6"
+        ></p>
+
         <button
           id="modal-close-btn"
           class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
@@ -473,15 +670,22 @@
     />
 
     <!-- Scripts -->
-    <script type="module" src="/src/js/logic/pdf-multi-tool.ts"></script>
-    <script type="module" src="/src/js/main.ts"></script>
+    <script
+      type="module"
+      src="/src/js/logic/pdf-multi-tool.ts"
+    ></script>
+
+    <script
+      type="module"
+      src="/src/js/main.ts"
+    ></script>
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "PDF Multi Tool - BentoPDF",
+        "name": "PDF Multi Tool - PDF Editor",
         "applicationCategory": "PDF Tool",
         "operatingSystem": "Any - Web Browser",
         "offers": {
@@ -496,8 +700,8 @@
       {
         "@context": "https://schema.org",
         "@type": "HowTo",
-        "name": "How to pdf multi tool online",
-        "description": "Learn how to pdf multi tool using BentoPDF",
+        "name": "How to use PDF Multi Tool online",
+        "description": "Learn how to use the PDF Multi Tool with PDF Editor",
         "step": [
           {
             "@type": "HowToStep",
@@ -509,13 +713,13 @@
             "@type": "HowToStep",
             "position": 2,
             "name": "Process",
-            "text": "Click the process button"
+            "text": "Use the available PDF editing and organisation tools"
           },
           {
             "@type": "HowToStep",
             "position": 3,
             "name": "Download",
-            "text": "Download your processed file"
+            "text": "Download your processed PDF"
           }
         ]
       }
@@ -530,13 +734,13 @@
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://www.bentopdf.com"
+            "item": "https://pdf.veloxity.org/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "PDF Multi Tool",
-            "item": "https://www.bentopdf.com/pdf-multi-tool"
+            "item": "https://pdf.veloxity.org/pdf-multi-tool"
           }
         ]
       }
