@@ -13,7 +13,7 @@
     "build:brotli": "COMPRESSION_MODE=b npm run build",
     "build:original": "COMPRESSION_MODE=o npm run build",
     "build:all": "COMPRESSION_MODE=all npm run build",
-    "build:production": "VITE_USE_CDN=true npm run build:with-docs",
+    "build:production": "SITE_URL=https://pdf.veloxity.org VITE_USE_CDN=true npm run build:with-docs",
     "preview": "vite preview",
     "obfuscate": "node scripts/build.mjs",
     "test": "vitest",
