@@ -943,6 +943,44 @@ function rewriteHtmlPathsPlugin(): Plugin {
   };
 }
 
+function removeFaviconsPlugin(): Plugin {
+  return {
+    name: 'remove-favicons',
+    enforce: 'post',
+
+    writeBundle(options, bundle) {
+      const outDir = options.dir;
+
+      if (!outDir) return;
+
+      for (const fileName of Object.keys(bundle)) {
+        if (!fileName.endsWith('.html')) continue;
+
+        const filePath = resolve(outDir, fileName);
+
+        if (!fs.existsSync(filePath)) continue;
+
+        const source = fs.readFileSync(filePath, 'utf8');
+
+        const updated = source
+          .replace(
+            /<link[^>]*rel=["']icon["'][^>]*>\s*/gi,
+            ''
+          )
+          .replace(
+            /<link[^>]*rel=["']apple-touch-icon["'][^>]*>\s*/gi,
+            ''
+          );
+
+        if (updated !== source) {
+          fs.writeFileSync(filePath, updated);
+          console.log(`[Vite] Removed favicon references from ${fileName}`);
+        }
+      }
+    },
+  };
+}
+
 export default defineConfig(() => {
   const USE_CDN =
     process.env.VITE_USE_CDN ===
@@ -1027,6 +1065,8 @@ export default defineConfig(() => {
 
       rewriteHtmlPathsPlugin(),
 
+      removeFaviconsPlugin(),
+      
       swPrecachePlugin(),
 
       tailwindcss(),
