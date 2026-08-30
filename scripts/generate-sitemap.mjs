@@ -7,10 +7,11 @@ const __dirname = path.dirname(__filename);
 
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const LOCALES_DIR = path.resolve(__dirname, '../public/locales');
-const SITE_URL = (process.env.SITE_URL || 'https://.pdf.veloxity.org').replace(
-  /\/+$/,
-  ''
-);
+
+const SITE_URL = (
+  process.env.SITE_URL || 'https://pdf.veloxity.org'
+).replace(/\/+$/, '');
+
 const EXCLUDED_PAGES = new Set(['404', 'wasm-settings']);
 
 const languages = fs.readdirSync(LOCALES_DIR).filter((file) => {
@@ -49,10 +50,14 @@ function getPriority(pageName) {
 
 function buildUrl(lang, pageName) {
   const pagePath = pageName === 'index' ? '' : pageName;
+
   if (lang === 'en') {
     return pagePath ? `${SITE_URL}/${pagePath}` : SITE_URL;
   }
-  return pagePath ? `${SITE_URL}/${lang}/${pagePath}` : `${SITE_URL}/${lang}`;
+
+  return pagePath
+    ? `${SITE_URL}/${lang}/${pagePath}`
+    : `${SITE_URL}/${lang}`;
 }
 
 function generateSitemap() {
@@ -67,21 +72,31 @@ function generateSitemap() {
     .filter((name) => !EXCLUDED_PAGES.has(name));
 
   const lastModCache = new Map();
+
   const getLastMod = (lang, pageName) => {
     const cacheKey = `${lang}::${pageName}`;
-    if (lastModCache.has(cacheKey)) return lastModCache.get(cacheKey);
+
+    if (lastModCache.has(cacheKey)) {
+      return lastModCache.get(cacheKey);
+    }
+
     const fileName = `${pageName}.html`;
+
     const filePath =
       lang === 'en'
         ? path.join(DIST_DIR, fileName)
         : path.join(DIST_DIR, lang, fileName);
+
     let iso;
+
     try {
       iso = fs.statSync(filePath).mtime.toISOString().slice(0, 10);
     } catch {
       iso = new Date().toISOString().slice(0, 10);
     }
+
     lastModCache.set(cacheKey, iso);
+
     return iso;
   };
 
@@ -104,11 +119,13 @@ function generateSitemap() {
 
     for (const altLang of languages) {
       const altUrl = buildUrl(altLang, pageName);
+
       sitemap += `    <xhtml:link rel="alternate" hreflang="${altLang}" href="${altUrl}"/>
 `;
     }
 
     const defaultUrl = buildUrl('en', pageName);
+
     sitemap += `    <xhtml:link rel="alternate" hreflang="x-default" href="${defaultUrl}"/>
   </url>
 `;
