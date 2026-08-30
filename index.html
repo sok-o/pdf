@@ -41,92 +41,126 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="PDF Editor - Free Online PDF Tools" />
+    <meta
+      name="twitter:title"
+      content="PDF Editor - Free Online PDF Tools"
+    />
     <meta
       name="twitter:description"
       content="Free PDF tools that run in your browser. Merge, split, compress, convert - all free, no signup, privacy-first."
     />
-    
+
     <!-- Mobile Web App -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="mobile-web-app-capable"
+      content="yes"
+    />
+    <meta
+      name="apple-mobile-web-app-capable"
+      content="yes"
+    />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <meta name="apple-mobile-web-app-title" content="PDF Editor" />
+    <meta
+      name="apple-mobile-web-app-title"
+      content="PDF Editor"
+    />
 
     <!-- Web App Manifest -->
-    <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="manifest"
+      href="/site.webmanifest"
+    />
 
-    <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
     <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="/images/favicon-192x192.png"
+      href="src/css/styles.css"
+      rel="stylesheet"
     />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="/images/favicon-512x512.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/images/apple-touch-icon.png"
-    />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-
-    <link href="src/css/styles.css" rel="stylesheet" />
   </head>
 
   <body class="antialiased">
     {{> navbar }}
 
-    <div id="app" class="min-h-screen container mx-auto p-4 md:p-8">
-      <section id="hero-section" class="text-center py-20 relative">
+    <div
+      id="app"
+      class="min-h-screen container mx-auto p-4 md:p-8"
+    >
+      <section
+        id="hero-section"
+        class="text-center py-20 relative"
+      >
         <div class="bg-grid-pattern"></div>
-        <h1 class="text-4xl md:text-7xl font-bold text-white mb-4">
+
+        <h1
+          class="text-4xl md:text-7xl font-bold text-white mb-4"
+        >
           <span data-i18n="hero.title">The</span>
+
           <span
             class="inline-flex items-center gap-3 border-2 border-indigo-400 bg-indigo-900 text-indigo-300 px-4 py-2 rounded-full mx-2 align-middle"
           >
-            <span data-i18n="hero.pdfToolkit">PDF Toolkit</span>
+            <span data-i18n="hero.pdfToolkit">
+              PDF Toolkit
+            </span>
+
             <i
               data-lucide="briefcase"
               class="w-8 h-8 md:w-12 md:h-12 transform -rotate-4"
             ></i>
           </span>
-          <span data-i18n="hero.builtForPrivacy">built for privacy</span
-          ><span
+
+          <span data-i18n="hero.builtForPrivacy">
+            built for privacy
+          </span>
+
+          <span
             class="text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500"
             >.</span
           >
         </h1>
-        <!-- <p class="text-lg text-gray-400 mb-12">Fast, Secure and Forever Free.</p> -->
+
         <div
           class="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mb-12 mt-12"
         >
           <span
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/40 border border-gray-700/50 text-gray-400 text-sm font-medium"
           >
-            <i data-lucide="check-circle" class="w-4 h-4 text-gray-400"></i>
-            <span data-i18n="hero.noSignups">No Signups</span>
+            <i
+              data-lucide="check-circle"
+              class="w-4 h-4 text-gray-400"
+            ></i>
+
+            <span data-i18n="hero.noSignups">
+              No Signups
+            </span>
           </span>
+
           <span
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/40 border border-gray-700/50 text-gray-400 text-sm font-medium"
           >
-            <i data-lucide="check-circle" class="w-4 h-4 text-gray-400"></i>
-            <span data-i18n="hero.unlimitedUse">Unlimited Use</span>
+            <i
+              data-lucide="check-circle"
+              class="w-4 h-4 text-gray-400"
+            ></i>
+
+            <span data-i18n="hero.unlimitedUse">
+              Unlimited Use
+            </span>
           </span>
+
           <span
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/40 border border-gray-700/50 text-gray-400 text-sm font-medium"
           >
-            <i data-lucide="check-circle" class="w-4 h-4 text-gray-400"></i>
-            <span data-i18n="hero.worksOffline">Works Offline</span>
+            <i
+              data-lucide="check-circle"
+              class="w-4 h-4 text-gray-400"
+            ></i>
+
+            <span data-i18n="hero.worksOffline">
+              Works Offline
+            </span>
           </span>
         </div>
 
@@ -135,8 +169,13 @@
             href="#tools-header"
             class="inline-flex items-center gap-3 pl-8 pr-2 py-2 rounded-full bg-gradient-to-b from-indigo-500 to-indigo-600 text-white font-semibold focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-400 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200 transform hover:-translate-y-1"
           >
-            <span data-i18n="hero.startUsing">Start Using Now</span>
-            <span class="bg-white text-indigo-600 rounded-full p-2">
+            <span data-i18n="hero.startUsing">
+              Start Using Now
+            </span>
+
+            <span
+              class="bg-white text-indigo-600 rounded-full p-2"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -157,21 +196,35 @@
         </div>
       </section>
 
+      <section
+        id="features-section"
+        class="py-20"
+      >
+        <h2
+          class="text-3xl md:text-4xl font-bold text-center text-white mb-12"
+        >
+          <span data-i18n="features.title">
+            Why choose
+          </span>
 
-      <section id="features-section" class="py-20">
-        <h2 class="text-3xl md:text-4xl font-bold text-center text-white mb-12">
-          <span data-i18n="features.title">Why choose</span>
-          <span class="marker-slanted" data-i18n="features.pdfEditor"
-            >PDF Editor?</span
+          <span
+            class="marker-slanted"
+            data-i18n="features.pdfEditor"
           >
+            PDF Editor?
+          </span>
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           <div class="bg-gray-800 p-6 rounded-lg">
             <div class="flex items-center gap-4 mb-3">
               <i
                 data-lucide="user-plus"
                 class="w-10 h-10 text-indigo-400 flex-shrink-0"
               ></i>
+
               <h3
                 class="text-xl font-bold text-white"
                 data-i18n="features.noSignup.title"
@@ -179,6 +232,7 @@
                 No Signup
               </h3>
             </div>
+
             <p
               class="text-gray-400 pl-14"
               data-i18n="features.noSignup.description"
@@ -186,12 +240,14 @@
               Start instantly, no accounts or emails.
             </p>
           </div>
+
           <div class="bg-gray-800 p-6 rounded-lg">
             <div class="flex items-center gap-4 mb-3">
               <i
                 data-lucide="shield"
                 class="w-10 h-10 text-indigo-400 flex-shrink-0"
               ></i>
+
               <h3
                 class="text-xl font-bold text-white"
                 data-i18n="features.noUploads.title"
@@ -199,6 +255,7 @@
                 No Uploads
               </h3>
             </div>
+
             <p
               class="text-gray-400 pl-14"
               data-i18n="features.noUploads.description"
@@ -206,12 +263,14 @@
               100% client-side, your files never leave your device.
             </p>
           </div>
+
           <div class="bg-gray-800 p-6 rounded-lg">
             <div class="flex items-center gap-4 mb-3">
               <i
                 data-lucide="badge-dollar-sign"
                 class="w-10 h-10 text-indigo-400 flex-shrink-0"
               ></i>
+
               <h3
                 class="text-xl font-bold text-white"
                 data-i18n="features.foreverFree.title"
@@ -219,6 +278,7 @@
                 Forever Free
               </h3>
             </div>
+
             <p
               class="text-gray-400 pl-14"
               data-i18n="features.foreverFree.description"
@@ -226,12 +286,14 @@
               All tools, no trials, no paywalls.
             </p>
           </div>
+
           <div class="bg-gray-800 p-6 rounded-lg">
             <div class="flex items-center gap-4 mb-3">
               <i
                 data-lucide="infinity"
                 class="w-10 h-10 text-indigo-400 flex-shrink-0"
               ></i>
+
               <h3
                 class="text-xl font-bold text-white"
                 data-i18n="features.noLimits.title"
@@ -239,6 +301,7 @@
                 No Limits
               </h3>
             </div>
+
             <p
               class="text-gray-400 pl-14"
               data-i18n="features.noLimits.description"
@@ -246,12 +309,14 @@
               Use as much as you want, no hidden caps.
             </p>
           </div>
+
           <div class="bg-gray-800 p-6 rounded-lg">
             <div class="flex items-center gap-4 mb-3">
               <i
                 data-lucide="layers"
                 class="w-10 h-10 text-indigo-400 flex-shrink-0"
               ></i>
+
               <h3
                 class="text-xl font-bold text-white"
                 data-i18n="features.batchProcessing.title"
@@ -259,6 +324,7 @@
                 Batch Processing
               </h3>
             </div>
+
             <p
               class="text-gray-400 pl-14"
               data-i18n="features.batchProcessing.description"
@@ -266,12 +332,14 @@
               Handle unlimited PDFs in one go.
             </p>
           </div>
+
           <div class="bg-gray-800 p-6 rounded-lg">
             <div class="flex items-center gap-4 mb-3">
               <i
                 data-lucide="zap"
                 class="w-10 h-10 text-indigo-400 flex-shrink-0"
               ></i>
+
               <h3
                 class="text-xl font-bold text-white"
                 data-i18n="features.lightningFast.title"
@@ -279,6 +347,7 @@
                 Lightning Fast
               </h3>
             </div>
+
             <p
               class="text-gray-400 pl-14"
               data-i18n="features.lightningFast.description"
@@ -291,14 +360,29 @@
 
       <div class="section-divider"></div>
 
-      <div id="tools-header" class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">
-          <span data-i18n="tools.title">Get Started with</span>
-          <span class="marker-slanted ml-2" data-i18n="tools.toolsLabel">
-            Tools</span
+      <div
+        id="tools-header"
+        class="text-center mb-12"
+      >
+        <h2
+          class="text-3xl md:text-4xl font-bold text-white mb-3"
+        >
+          <span data-i18n="tools.title">
+            Get Started with
+          </span>
+
+          <span
+            class="marker-slanted ml-2"
+            data-i18n="tools.toolsLabel"
           >
+            Tools
+          </span>
         </h2>
-        <p class="text-gray-400" data-i18n="tools.subtitle">
+
+        <p
+          class="text-gray-400"
+          data-i18n="tools.subtitle"
+        >
           Click a tool to open the file uploader
         </p>
       </div>
@@ -306,9 +390,15 @@
       <div id="grid-view">
         <div class="mb-8 max-w-lg mx-auto">
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-              <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-3"
+            >
+              <i
+                data-lucide="search"
+                class="w-5 h-5 text-gray-400"
+              ></i>
             </span>
+
             <input
               type="text"
               id="search-bar"
@@ -316,6 +406,7 @@
               placeholder="Search for a tool (e.g., 'split', 'organize'...)"
               data-i18n-placeholder="tools.searchPlaceholder"
             />
+
             <span
               class="absolute inset-y-0 right-0 flex items-center rounded-lg pr-2 gap-2"
             >
@@ -323,12 +414,16 @@
                 id="shortcut"
                 class="bg-gray-800 px-2.5 py-1.5 rounded-md text-xs font-semibold text-gray-300 border border-gray-700 shadow-sm"
               ></kbd>
+
               <button
                 id="open-shortcuts-btn"
                 class="p-1 hover:bg-gray-600 rounded-md text-gray-400 hover:text-white transition-colors"
                 title="Keyboard Shortcuts"
               >
-                <i data-lucide="settings" class="w-4 h-4"></i>
+                <i
+                  data-lucide="settings"
+                  class="w-4 h-4"
+                ></i>
               </button>
             </span>
           </div>
@@ -348,11 +443,19 @@
           id="back-to-grid"
           class="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 mb-6 font-semibold"
         >
-          <i data-lucide="arrow-left" class="cursor-pointer"></i>
-          <span class="cursor-pointer" data-i18n="tools.backToTools">
+          <i
+            data-lucide="arrow-left"
+            class="cursor-pointer"
+          ></i>
+
+          <span
+            class="cursor-pointer"
+            data-i18n="tools.backToTools"
+          >
             Back to Tools
           </span>
         </button>
+
         <div id="tool-content"></div>
       </div>
 
@@ -364,6 +467,7 @@
           class="bg-gray-800 p-8 rounded-lg flex flex-col items-center gap-4 border border-gray-700 shadow-xl"
         >
           <div class="solid-spinner"></div>
+
           <p
             id="loader-text"
             class="text-white text-lg font-medium"
@@ -381,12 +485,20 @@
         <div
           class="bg-gray-800 max-w-sm w-full p-6 rounded-lg border border-gray-700 shadow-xl text-center"
         >
-          <h3 id="alert-title" class="text-xl font-bold text-white mb-2">
+          <h3
+            id="alert-title"
+            class="text-xl font-bold text-white mb-2"
+          >
             Alert
           </h3>
-          <p id="alert-message" class="text-gray-300 mb-6 whitespace-pre-line">
+
+          <p
+            id="alert-message"
+            class="text-gray-300 mb-6 whitespace-pre-line"
+          >
             This is an alert message.
           </p>
+
           <button
             id="alert-ok"
             class="btn bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700"
@@ -403,8 +515,13 @@
         <div
           class="bg-white text-black rounded-lg shadow-xl w-full max-w-4xl h-[90vh] flex flex-col"
         >
-          <div class="p-4 border-b flex justify-between items-center">
-            <h3 class="text-xl font-bold">Document Preview</h3>
+          <div
+            class="p-4 border-b flex justify-between items-center"
+          >
+            <h3 class="text-xl font-bold">
+              Document Preview
+            </h3>
+
             <div class="flex gap-4">
               <button
                 id="preview-download-btn"
@@ -412,6 +529,7 @@
               >
                 Download as PDF
               </button>
+
               <button
                 id="preview-close-btn"
                 class="btn bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-700"
@@ -420,7 +538,11 @@
               </button>
             </div>
           </div>
-          <div id="preview-content" class="p-8 overflow-y-auto flex-grow"></div>
+
+          <div
+            id="preview-content"
+            class="p-8 overflow-y-auto flex-grow"
+          ></div>
         </div>
       </div>
 
@@ -438,12 +560,18 @@
           class="bg-gray-800 rounded-xl border border-gray-700 shadow-2xl max-w-md w-full overflow-hidden"
         >
           <div class="p-6">
-            <div class="flex items-start gap-4 mb-4">
+            <div
+              class="flex items-start gap-4 mb-4"
+            >
               <div
                 class="w-12 h-12 flex items-center justify-center rounded-full bg-indigo-500/10 flex-shrink-0"
               >
-                <i data-lucide="lock" class="w-6 h-6 text-indigo-400"></i>
+                <i
+                  data-lucide="lock"
+                  class="w-6 h-6 text-indigo-400"
+                ></i>
               </div>
+
               <div class="flex-1">
                 <h3
                   id="password-modal-title"
@@ -451,12 +579,14 @@
                 >
                   Password Required
                 </h3>
+
                 <p
                   id="password-modal-filename"
                   class="text-gray-400 text-sm truncate"
                 ></p>
               </div>
             </div>
+
             <div class="mt-4">
               <div class="relative">
                 <input
@@ -466,27 +596,36 @@
                   placeholder="Enter password"
                   autocomplete="off"
                 />
+
                 <button
                   id="password-modal-toggle"
                   type="button"
                   class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
                 >
-                  <i data-lucide="eye" class="w-4 h-4"></i>
+                  <i
+                    data-lucide="eye"
+                    class="w-4 h-4"
+                  ></i>
                 </button>
               </div>
+
               <p
                 id="password-modal-error"
                 class="text-xs text-red-400 mt-2 hidden"
               ></p>
             </div>
           </div>
-          <div class="flex gap-3 p-4 border-t border-gray-700">
+
+          <div
+            class="flex gap-3 p-4 border-t border-gray-700"
+          >
             <button
               id="password-modal-cancel"
               class="flex-1 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
             >
               Skip
             </button>
+
             <button
               id="password-modal-submit"
               class="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
@@ -497,7 +636,9 @@
         </div>
       </div>
 
-      <div class="section-divider hide-section mb-20 mt-10"></div>
+      <div
+        class="section-divider hide-section mb-20 mt-10"
+      ></div>
 
       <!-- Scroll to Top Button -->
       <button
@@ -505,16 +646,34 @@
         class="fixed bottom-12 right-8 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10 invisible z-40"
         aria-label="Scroll to top"
       >
-        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+        <i
+          data-lucide="arrow-up"
+          class="w-6 h-6"
+        ></i>
       </button>
     </div>
 
     {{> footer }}
 
-    <script type="module" src="src/js/utils/lucide-init.ts"></script>
-    <script type="module" src="src/js/main.ts"></script>
-    <script type="module" src="src/js/mobileMenu.ts"></script>
-    <script type="module" src="src/js/sw-register.ts"></script>
+    <script
+      type="module"
+      src="src/js/utils/lucide-init.ts"
+    ></script>
+
+    <script
+      type="module"
+      src="src/js/main.ts"
+    ></script>
+
+    <script
+      type="module"
+      src="src/js/mobileMenu.ts"
+    ></script>
+
+    <script
+      type="module"
+      src="src/js/sw-register.ts"
+    ></script>
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
